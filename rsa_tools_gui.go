@@ -8,14 +8,14 @@ import (
 func main() {
 	app.OnLaunch = func() {
 		win := app.NewWindow(app.Window{
-			Title: "Hello World",
-			Width: 1280,
-			Height: 720,
+			Title: "RSA Tools GUI",
+			Width: 800,
+			Height: 640,
 			TitlebarHidden: true,
 		})
 
-		hello := &Hello{}
-		win.Mount(hello)
+		codec := &Codec{}
+		win.Mount(codec)
 	}
 
 	app.Run()
