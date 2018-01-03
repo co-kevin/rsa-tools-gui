@@ -1,6 +1,9 @@
 package main
 
-import "github.com/murlokswarm/app"
+import (
+	"github.com/murlokswarm/app"
+	"encoding/base64"
+)
 
 type Codec struct {
 	RsaPrivateKey string // user input rsa private key
@@ -43,10 +46,30 @@ func (c *Codec) OnChangeData(arg app.ChangeArg) {
 
 // on click submit button
 func (c *Codec) OnClickButton(arg app.EventArg) {
-	c.Output = "on click button"
-	app.Render(c)
-	println(c.RsaPrivateKey)
-	println(c.Data)
+	defer app.Render(c)
+	if c.RsaPrivateKey == "" {
+		c.Output = "Please enter your rsa private key"
+		return
+	}
+
+	if c.Data == "" {
+		c.Output = "Please enter your data"
+		return
+	}
+
+	rsa := RSASecurity{}
+	if err := rsa.SetPrivateKey(c.RsaPrivateKey); err != nil {
+		c.Output = err.Error()
+		return
+	}
+
+	data, err := rsa.Encrypt([]byte(c.Data))
+	if err != nil {
+		c.Output = err.Error()
+		return
+	}
+
+	c.Output = base64.StdEncoding.EncodeToString(data)
 }
 
 // register component
