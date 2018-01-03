@@ -6,15 +6,6 @@ body {
     overflow: hidden;
 }
 
-WindowLayout {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    /*display: flex;*/
-    /*justify-content: center;*/
-    /*align-items: center;*/
-}
-
 .HelloBox {
     padding: 5pt;
 }
@@ -32,4 +23,8 @@ textarea {
 
 textarea:focus {
     border-left-color: deepskyblue;
+}
+
+.output {
+    width: 100%;
 }

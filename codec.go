@@ -21,7 +21,7 @@ func (c *Codec) Render() string {
 		<textarea row="8" placeholder="Enter your data" onchange="OnChangeData">
 		</textarea>
 		<button onclick="OnClickButton">Encode</button>
-		<h2>{{html .Output}}</h2>
+		<p class="output">{{html .Output}}</p>
     </div>
 </div>
 `
@@ -58,7 +58,7 @@ func (c *Codec) OnClickButton(arg app.EventArg) {
 	}
 
 	rsa := RSASecurity{}
-	if err := rsa.SetPrivateKey(c.RsaPrivateKey); err != nil {
+	if err := rsa.SetPublicKey(c.RsaPrivateKey); err != nil {
 		c.Output = err.Error()
 		return
 	}
