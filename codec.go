@@ -15,10 +15,10 @@ func (c *Codec) Render() string {
 	return `
 <div class="WindowLayout">
     <div class="HelloBox">
-		<h1>Encode data with rsa and base64</h1>
-        <textarea row="8" placeholder="Enter your rsa key" onchange="OnChangeKey">
+		<h1>Encode or Decode use RSA and Base64</h1>
+        <textarea row="15" placeholder="Enter your rsa key" onchange="OnChangeKey">
 		</textarea>
-		<textarea row="8" placeholder="Enter your data" onchange="OnChangeData">
+		<textarea row="15" placeholder="Enter your data" onchange="OnChangeData">
 		</textarea>
 		<button onclick="OnClickEncodeButton">Encode</button><button onclick="OnClickDecodeButton">Decode</button>
 		<p class="output">{{html .Output}}</p>
@@ -86,16 +86,15 @@ func (c *Codec) OnClickDecodeButton(arg app.EventArg) {
 		return
 	}
 
-	data, err := rsa.Decrypt([]byte(c.Data))
-	if err != nil {
-		c.Output = err.Error()
-		return
-	}
-
-	if output, err := base64.StdEncoding.DecodeString(string(data)); err != nil {
+	if input, err := base64.StdEncoding.DecodeString(string(c.Data)); err != nil {
 		c.Output = err.Error()
 	} else {
-		c.Output = string(output)
+		data, err := rsa.Decrypt(input)
+		if err != nil {
+			c.Output = err.Error()
+			return
+		}
+		c.Output = string(data)
 	}
 }
 

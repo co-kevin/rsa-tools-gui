@@ -28,6 +28,7 @@ textarea {
     font-size: 14px;
     background: transparent;
     color: white;
+    resize: none;
 }
 
 textarea:focus {
@@ -35,5 +36,6 @@ textarea:focus {
 }
 
 .output {
-    width: 100%;
+    width: 600px;
+    word-wrap: break-word;
 }
