@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/murlokswarm/app"
 	"encoding/base64"
+	"github.com/murlokswarm/app"
 )
 
 type Codec struct {
-	RsaPrivateKey string // user input rsa private key
-	Data          string // user input encrypt data or origin data
-	Output        string // output data
+	RsaKey string // user input rsa private/public key
+	Data   string // user input encrypt data or origin data
+	Output string // output data
 }
 
 func (c *Codec) Render() string {
@@ -16,25 +16,20 @@ func (c *Codec) Render() string {
 <div class="WindowLayout">
     <div class="HelloBox">
 		<h1>Encode data with rsa and base64</h1>
-        <textarea row="8" placeholder="Enter your rsa private key" onchange="OnChangePrivateKey">
+        <textarea row="8" placeholder="Enter your rsa key" onchange="OnChangeKey">
 		</textarea>
 		<textarea row="8" placeholder="Enter your data" onchange="OnChangeData">
 		</textarea>
-		<button onclick="OnClickButton">Encode</button>
+		<button onclick="OnClickEncodeButton">Encode</button><button onclick="OnClickDecodeButton">Decode</button>
 		<p class="output">{{html .Output}}</p>
     </div>
 </div>
 `
 }
 
-// on swatch encoder or decoder
-func (c *Codec) OnSwitchMethod(arg app.EventArg) {
-
-}
-
-// on change private key, set data to context
-func (c *Codec) OnChangePrivateKey(arg app.ChangeArg) {
-	c.RsaPrivateKey = arg.Value
+// on change key, set data to context
+func (c *Codec) OnChangeKey(arg app.ChangeArg) {
+	c.RsaKey = arg.Value
 	app.Render(c)
 }
 
@@ -44,11 +39,11 @@ func (c *Codec) OnChangeData(arg app.ChangeArg) {
 	app.Render(c)
 }
 
-// on click submit button
-func (c *Codec) OnClickButton(arg app.EventArg) {
+// on click encode button, encode use public key
+func (c *Codec) OnClickEncodeButton(arg app.EventArg) {
 	defer app.Render(c)
-	if c.RsaPrivateKey == "" {
-		c.Output = "Please enter your rsa private key"
+	if c.RsaKey == "" {
+		c.Output = "Please enter your rsa public key"
 		return
 	}
 
@@ -58,7 +53,7 @@ func (c *Codec) OnClickButton(arg app.EventArg) {
 	}
 
 	rsa := RSASecurity{}
-	if err := rsa.SetPublicKey(c.RsaPrivateKey); err != nil {
+	if err := rsa.SetPublicKey(c.RsaKey); err != nil {
 		c.Output = err.Error()
 		return
 	}
@@ -70,6 +65,38 @@ func (c *Codec) OnClickButton(arg app.EventArg) {
 	}
 
 	c.Output = base64.StdEncoding.EncodeToString(data)
+}
+
+// on click decode button, decode use private key
+func (c *Codec) OnClickDecodeButton(arg app.EventArg) {
+	defer app.Render(c)
+	if c.RsaKey == "" {
+		c.Output = "Please enter your rsa private key"
+		return
+	}
+
+	if c.Data == "" {
+		c.Output = "Please enter your data"
+		return
+	}
+
+	rsa := RSASecurity{}
+	if err := rsa.SetPrivateKey(c.RsaKey); err != nil {
+		c.Output = err.Error()
+		return
+	}
+
+	data, err := rsa.Decrypt([]byte(c.Data))
+	if err != nil {
+		c.Output = err.Error()
+		return
+	}
+
+	if output, err := base64.StdEncoding.DecodeString(string(data)); err != nil {
+		c.Output = err.Error()
+	} else {
+		c.Output = string(output)
+	}
 }
 
 // register component
